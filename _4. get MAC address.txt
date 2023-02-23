@@ -1,0 +1,4 @@
+NOTE: "{#}" should be replaced with your COM port number.
+
+1. Get your mac address. Save it in "MAC address.txt"!
+python esptool.py --port COM{#} read_mac
