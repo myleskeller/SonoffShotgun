@@ -16,15 +16,16 @@ def saveDeviceIfPresent(pingMaxTime, ping, devices, ip):
     if ping(ip, pingMaxTime):
         devices.append(ip)
 
-def toggle(device, song):
-    for s in song:
-        os.system('cmd /c "curl http://' + device + '/cm?cmnd=Power%20TOGGLE"')
-        time.sleep(s)
-        # print(" Time:", s[1], "Device:", device[10:])
+def toggle(device, delay):
+    # for s in song:
+    os.system('cmd /c "curl http://' + device + '/cm?cmnd=Power%20TOGGLE"')
+    # time.sleep(delay)
+    print(" Time:", delay, "Device:", device[10:])
     return 
     
 def formatSSID(device):
-    messages = ["Var1%20Thank%20you%20for%20attending%21", "Var2%20Your%20device%20is%20now%20reset.", "Var3%20--IEEE-CS", "Var", "Backlog%20SSID1%201%3B%20Restart%201"]
+    # messages = ["Var1%20Thank%20you%20for%20attending%21", "Var2%20Your%20device%20is%20now%20reset.", "Var3%20--IEEE-CS", "Var", "Backlog%20SSID1%201%3B%20Restart%201"]
+    messages = ["Backlog%20SSID1%201%3B%20Restart%201"]
     for m in messages:
         os.system('cmd /c "curl http://' + device + '/cm?cmnd=' + m + '"')
     return
@@ -48,24 +49,18 @@ devices = []
 print("searching for connected devices. This will take about "+str(estimation)+" seconds...")
 
 # iterative approach to pinging IP addresses
-for ip in ips:
-    saveDeviceIfPresent(pingMaxTime, ping, devices, ip)
+# for ip in ips:
+    # saveDeviceIfPresent(pingMaxTime, ping, devices, ip)
 
-# the threaded implementation of Pinging does not work well...
-# threads = [threading.Thread(target=saveDeviceIfPresent, args=(pingMaxTime, ping, devices, ip)) for ip in ips]
-# for t in threads:
-    # t.start()
-# for t in threads:
-    # t.join()
 # for testing
 # devices.append(default_gateway) # for testing
-# devices.append("192.168.1.100") # for testing
-# devices.append("192.168.1.103") # for testing
+devices.append("192.168.1.100") # for testing
+devices.append("192.168.1.136") # for testing
 
-# remove host machine from list
-devices.remove(hostname)
-# remove default gateway from list
-devices.remove(default_gateway)
+# not worth implementing because of errors
+# devices.remove(hostname) # remove host machine from list
+# devices.remove(default_gateway) # remove default gateway from list
+
 print()
 print(str(len(devices))+" devices found:")
 print(devices)
@@ -74,28 +69,36 @@ print()
 variable = ""
 print("this probably won't work well because of network latency..")
 while variable != 's':
-    variable = input('enter \'s\' to attempt to play the song: ')
-# "Shave and a Haircut, 2 Bits" thing
-print("doing the song...")
+    variable = input('enter \'s\' to cause click storm: ')
+# random switch thing
+print("creating chaos.")
 
-# song2 = "Backlog Power toggle; Delay 30; Power toggle; Delay 2; Power toggle; Delay 2; Power toggle; Delay 1; Power toggle; Delay 1; Power toggle; Delay 2; Power toggle; Delay 5; Power toggle; Delay 2; Power toggle; Delay 5;"
-# too slow, but more accurate
-song2 = "Backlog%20Power%20toggle%3B%20Delay%2030%3B%20Power%20toggle%3B%20Delay%205%3B%20Power%20toggle%3B%20Delay%202%3B%20Power%20toggle%3B%20Delay%202%3B%20Power%20toggle%3B%20Delay%205%3B%20Power%20toggle%3B%20Delay%2010%3B%20Power%20toggle%3B%20Delay%205%3B%20Power%20toggle%3B%20Delay%2010%3B"
-# correct speed, but not accurate
-song3 = "Backlog%20Power%20toggle%3B%20Delay%2030%3B%20Power%20toggle%3B%20Delay%202%3B%20Power%20toggle%3B%20Delay%201%3B%20Power%20toggle%3B%20Delay%201%3B%20Power%20toggle%3B%20Delay%202%3B%20Power%20toggle%3B%20Delay%205%3B%20Power%20toggle%3B%20Delay%202%3B%20Power%20toggle%3B%20Delay%205%3B"
-threads = [threading.Thread(target=playSong, args=(device, song2)) for device in devices]
+delay = 1
+variable = ""
 
-# timestep = 1 / 4
-# song = np.array([1, 1, 1 / 4, 1 / 4, 1, 2, 1, 2]) * timestep
-# threads = [threading.Thread(target=toggle, args=(device, song)) for device in devices]
-for t in threads:
-    t.start()
-for t in threads:
-    t.join()
+
+while True:
+    variable = input('\n\nenter \'s\' to stop: ')
+    for device in devices:
+        toggle(device, delay)
+    if variable == 's':
+        break
+      
+
+        
+        
+
+# delay = 10 #milliseconds?[
+# threads = [threading.Thread(target=toggle, args=(device, delay)) for device in devices]
+# for t in threads:
+    # t.start()
+# for t in threads:
+    # t.join()
    
 # formatting stored wifi credentials of connected devices
 variable = ""
 while variable != 'f':
     variable = input('\n\nenter \'f\' to format all connected devices\' wifi credentials: ')
 for device in devices:
+    print("Sent Ad-Hoc Reset Command to " + device)
     formatSSID(device)
