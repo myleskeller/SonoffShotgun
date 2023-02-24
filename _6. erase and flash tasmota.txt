@@ -1,7 +1,0 @@
-NOTE: "{#}" should be replaced with your COM port number.
-
-1. Erase stock Itead firmware.
-python esptool.py --port COM{#} erase_flash
-
-2. Flash Tasmota firmware.
-python esptool.py --port COM{#} write_flash -fs 1MB -fm dout 0x0 tasmota.bin
